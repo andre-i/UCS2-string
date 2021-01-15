@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<HTML>
+<!--  _________ HEADER  __________ -->
+	<HEAD>
+		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+		<TITLE>UCS2-sms_КОНВЕРТЕР</TITLE>
+		<style>
+			.field{
+				border: 10px, solid, gray;
+				color: #128;
+				background-color : #eef;
+				padding : 10px;
+				margin : 2%;
+				width: 80%;
+				height : 5em;
+				overflow : auto;
+			}
+			button{
+				color:blue;
+				margin-left: 3%;
+				margin-bottom: 2%;
+			}
+			.span{
+				text-align: right;
+				margin-right: 20%;
+				margin-left: 3%;
+			}
+		</style>
+	</HEAD>
+<!--  _________________  body  ________________  -->
+	<BODY>
+		<H3 align="center">Конвертер sms сообщений(UCS2 формат)</H3>
+		<p> Проверено для SIM900 и SIM800 </p>
+		<div>
+			 &nbsp; Конвертирование <em>HEX</em> сообщений UCS2 формата от GSM модулей
+			 в строку и наоборот.<br><br>
+			 &nbsp; Convert HEX sms message UCS2 format to string and vice versa
+		</div>
+		<hr width="60%" align="center" color="blue">
+		<div>
+			<u>Warning:</u>by string convert, must contains only hex and no
+			have other symbols(whitespace and etc).
+		</div>
+		<small> - </small>
+		<div>
+			<u>Важно:</u> При конвертировании в строку UCS2 или GSM не должны
+			содержать символов отличных от HEX ( пробелы, переносы строк и т.д.)
+		</div>
+		<hr width="60%" align="center" color="blue">
+		<div>
+				<span> Введите строку для преобразования</span><span class='span'> For convert</span>
+				<div class="field" id="from" contenteditable="true"><div></div></div>
+		</div>
+					<button onclick="convertToString()">В строку /To string</button>
+					<button onclick="convertToHex()">B HEX / To HEX</button>
+					<button onclick="clearIn()">Очистить / Clear </button>
+				<br><span>Вывод</span> <span class='span'> OUT </span>
+				<div class="field" id="to"></div>
+						<button onclick="clearOut()">Очистить / Clear</button>
+		<div>
+			<span style="color:#339;font-size:110%"> Замечания: </span>
+			<ul>
+				<li>При вставке выражений от модема, <em>важно</em> не вносить никаких
+					изменений - пробелов, переносов и т.п. Количество символов при
+					кодировании UCS2 всегда кратно 4. По четыре символа на одну букву.
+				<li>Преобразования из GSM нет. В этом формате смешиваются ascii с unicode.
+					Латинские символы передаются как есть, а остальные кодируются в юникод.
+				<li>При обратном конвертировании в HEX могут возникнуть проблемы с пробельными
+					символами. Это связано с реализацией разных браузеров - как в них
+					интерпретируются такие символы. <em>Чтобы избежать связанных с этим проблем
+					не используйте переносов строк и не ставьте более одного пробела между
+					непробельными символами</em>.На всякий случай привожу значение символа
+					переноса строк для UCS2 - 000a(перенос строки) или 000d(возврат каретки).
+				<li>Посмотреть каким наборам соответствуют определённые символы можно
+					ввести их по одному в поле для преобразования.
+				<li>Для проверки копируем вывод в ввод, преобразуем и сравниваем.
+				<li>Для юникода отображение различных нестандартных символов( имеются в
+					виду пиктограммы и т.п. )зависит от состава оперционной системы	и браузера.
+			</ul>
+		</div>
+		<script type="text/javascript" >
+
+		/*  converter UCS2 HEX into string and vice versa */
+		console.log("converter js");
+		//  out and input elememnts
+		var from = document.getElementById("from");
+		var to = document.getElementById("to");
+		clearIn();
+
+		/*
+		* decode from hex UCS2 format to string
+		*/
+		function convertToString(){
+		  let src=from.innerText.trim();
+		  console.log(" before parse [ " + src + ' ]');
+		  clearIn();
+		  from.innerText += src;
+		  if(src.length%4 != 0){
+		    addToOut('Неправильный формат данных - количество символов должно быть кратно 4 ' +
+		    ' в строке имеется ' + src.length + ' символов '  );
+		    console.log(src);
+		    return;
+		  }
+		  let cur = '', hex = '', buf = '';
+		  for(let n=0; n < src.length; n+=4){
+		    cur = src.substr(n, 4);
+		    if(checkNotNumber(cur))return;
+		  	try{
+		  		hex = parseInt( cur, 16); //(cur.replace(/^#/, ''), 16);
+		  	  buf += String.fromCodePoint(hex);
+		  	}catch(e){
+		      alert("Parse error = " + e.toString());
+		      console.log("Error on parse symbol '" + cur + "' [" + e.toString() + " ]");
+		  		to.textContent = "ERROR неправильные данные для '" + cur + "'";
+		  	}
+		  }
+		  addToOut(buf);
+		}
+
+		/*
+		  Encode string to UCS2 format
+		*/
+		function convertToHex(){
+		//  to HEX  hex = this.charCodeAt(i).toString(16);
+		  let src=from.innerText.trim();
+		  console.log(" before parse [ " + src + ' ]');
+		  clearIn();
+		  from.innerText += src;
+		  let res="", code;
+		  for( let n=0; n < src.length; n++){
+		    code = src.charCodeAt(n);
+		    if(code < 256){
+		      res += "00" + code.toString(16);
+		    }else{
+		      res += "0" + code.toString(16);
+		    }
+		  }
+		  addToOut(res);
+		}
+
+		/*
+		check string on all symbols is number
+		*/
+		function checkNotNumber(value){
+		  let res = /([^0-9a-f])+/i.test(value);
+		  if(res)  addToOut("(wrong data)Неверные данные - '" + value + "'  ");
+		  return res;
+		}
+
+
+		function clearOut(){
+		  to.textContent = '';
+		}
+
+		function clearIn(){
+		  from.textContent = '';
+		}
+
+		function addToOut(text){
+		  to.textContent = to.textContent + text;
+		}
+		</script>
+	</BODY>
+</HTML>
