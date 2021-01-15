@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<HTML>
+<!--  _________ HEADER  __________ -->
+	<HEAD>
+		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+		<TITLE>HEX_string_КОНВЕРТЕР</TITLE>
+		<style>
+			.field{
+				border: 10px, solid, gray;
+				color: #128;
+				background-color : #eef;
+				padding : 10px;
+				margin : 2%;
+				width: 80%;
+				height : 5em;
+				overflow : auto;
+			}
+			button{
+				color:blue;
+				margin-left: 3%;
+				margin-bottom: 2%;
+			}
+			.span{
+				text-align: right;
+				margin-right: 20%;
+				margin-left: 3%;
+			}
+		</style>
+	</HEAD>
+<!--  _________________  body  ________________  -->
+	<BODY>
+		<H3 align="center">Конвертер sms сообщений(UCS2 формат)</H3>	
+		<p> Проверено для SIM900 и SIM800 </p>
+		<div>
+			 &nbsp; Конвертирование <em>HEX</em> сообщений UCS2 формата от GSM модулей
+			 в строку и наоборот.<br><br>
+			 &nbsp; Convert HEX sms message UCS2 format to string and vice versa
+		</div>
+		<hr width="60%" align="center" color="blue">
+		<div>
+			<u>Warning:</u>by string convert, must contains only hex and no
+			have other symbols(whitespace and etc).
+		</div>
+		<small> - </small>
+		<div>
+			<u>Важно:</u> При конвертировании в строку UCS2 или GSM не должны
+			содержать символов отличных от HEX ( пробелы, переносы строк и т.д.)
+		</div>
+		<hr width="60%" align="center" color="blue">
+		<div>
+				<span> Введите строку для преобразования</span><span class='span'> For convert</span>
+				<div class="field" id="from" contenteditable="true"><div></div></div>
+		</div>
+					<button onclick="convertToString()">В строку /To string</button>
+					<button onclick="convertToHex()">B HEX / To HEX</button>
+					<button onclick="clearIn()">Очистить / Clear </button>
+				<br><span>Вывод</span> <span class='span'> OUT </span>
+				<div class="field" id="to"></div>
+						<button onclick="clearOut()">Очистить / Clear</button>
+		<div>
+			<span style="color:#339;font-size:110%"> Замечания: </span>
+			<ul>
+				<li>При вставке выражений от модема, <em>важно</em> не вносить никаких
+					изменений - пробелов, переносов и т.п. Количество символов при
+					кодировании UCS2 всегда кратно 4. По четыре символа на одну букву.
+				<li>Преобразования из GSM нет. В этом формате смешиваются ascii с unicode.
+					Латинские символы передаются как есть, а остальные кодируются в юникод.
+				<li>При обратном конвертировании в HEX могут возникнуть проблемы с пробельными
+					символами. Это связано с реализацией разных браузеров - как в них
+					интерпретируются такие символы. <em>Чтобы избежать связанных с этим проблем
+					не используйте переносов строк и не ставьте более одного пробела между
+					непробельными символами</em>.На всякий случай привожу значение символа
+					переноса строк для UCS2 - 000a(перенос строки) или 000d(возврат каретки).
+				<li>Посмотреть каким наборам соответствуют определённые символы можно
+					ввести их по одному в поле для преобразования.
+				<li>Для проверки копируем вывод в ввод, преобразуем и сравниваем.
+				<li>Для юникода отображение различных нестандартных символов( имеются в
+					виду пиктограммы и т.п. )зависит от состава оперционной системы	и браузера.
+			</ul>
+		</div>
+		<script type="text/javascript" src="./converter.js" >
+		</script>
+	</BODY>
+</HTML>
